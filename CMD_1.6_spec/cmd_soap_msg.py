@@ -48,7 +48,6 @@ Funções que preparam e executam os comandos SOAP do SCMD, nomeadamente:
 import hashlib            # hash SHA256
 import logging.config     # debug
 from zeep import Client   # zeep para SOAP
-import cmd_config
 
 
 # Função para ativar o debug, permitindo mostrar mensagens enviadas e recebidas do servidor SOAP
@@ -77,6 +76,30 @@ def debug():
     print('>> Debug: On')
 
 
+# Função que devolve o URL do WSDL do SCMD (preprod ou prod)
+def get_wsdl(env):
+    """Devolve URL do WSDL do SCMD.
+
+    Parameters
+    ----------
+    t : int
+        WSDL a devolver: 0 para preprod, 1 para prod.
+
+    Returns
+    -------
+    string
+        URL do WSDL do SCMD.
+
+    """
+    wsdl = {
+        0: 'https://preprod.cmd.autenticacao.gov.pt/Ama.Authentication.Frontend/CCMovelDigitalSignature.svc?wsdl',
+        1: 'https://cmd.autenticacao.gov.pt/Ama.Authentication.Frontend/CCMovelDigitalSignature.svc?wsdl'
+    }
+    # Get the function from switcher dictionary
+    return wsdl.get(env, lambda: 'No valid WSDL')
+
+
+# Função que devolve o cliente de ligação (preprod ou prod) ao servidor SOAP da CMD
 def getclient(env=0):
     """Devolve o cliente de ligação ao servidor SOAP da CMD.
 
@@ -88,22 +111,34 @@ def getclient(env=0):
     Returns
     -------
     Zeep.Client
-        Devolve o cliente de ligação ao servidor SOAP da CMD.
+        Devolve o cliente de ligação ao servidor SOAP da CMD. Por defeito devolve o
+        servidor de preprod.
 
     """
-    return Client(cmd_config.get_wsdl(env))
+    return Client(get_wsdl(env))
 
+# Devolve a hash acrescentada do prefixo do tipo de hash utilizada
+def hashPrefix(hashtype, hash):
+    """Devolve a hash, à qual acrescenta o prefixo adequado ao hashtype utilizada.
 
-def getappid():
-    """Devolve o APPLICATION_ID.
+    Parameters
+    ----------
+    hashtype : string ('SHA256')
+        tipo de hash efetuada, do qual hash é o resultado.
+    hash : byte
+        hash digest
 
     Returns
     -------
-    Zeep.Client
-        Devolve o APPLICATION_ID.
+    byte
+        Devolve hash adicionada de prefixo adequado ao hashtype de hash utilizada.
 
     """
-    return cmd_config.get_appid()
+    prefix = {
+        'SHA256': bytes(bytearray([0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+                                   0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20]))
+    }
+    return prefix.get(hashtype, lambda: 'Only SHA256 available') + hash
 
 
 # GetCertificate(applicationId: xsd:base64Binary, userId: xsd:string)
@@ -136,7 +171,7 @@ def getcertificate(client, args):
 #                  Hash: xsd:base64Binary, Pin: xsd:string, UserId: xsd:string)
 # ns2:SignStatus(Code: xsd:string, Field: xsd:string, FieldValue: xsd:string,
 #                   Message: xsd:string, ProcessId: xsd:string)
-def ccmovelsign(client, args):
+def ccmovelsign(client, args, hashtype='SHA256'):
     """Prepara e executa o comando SCMD CCMovelSign.
 
     Parameters
@@ -145,25 +180,26 @@ def ccmovelsign(client, args):
         Client inicializado com o WSDL.
     args : argparse.Namespace
         argumentos a serem utilizados na mensagem SOAP.
+    hashtype: Tipo de hash
+        tipo de hash efetuada, do qual o digest args.hash é o resultado.
 
     Returns
     -------
     SignStatus(Code: xsd:string, Field: xsd:string, FieldValue: xsd:string, Message: xsd:string,
     ProcessId: xsd:string)
-        Devolve uma estrutura SignStatus com a resposta do CCMovelSing.
+        Devolve uma estrutura SignStatus com a resposta do CCMovelSign.
 
     """
     if 'docName' not in args:
         args.docName = 'docname teste'
     if 'hash' not in args:
         args.hash = hashlib.sha256(b'Nobody inspects the spammish repetition').digest()
+    args.hash = hashPrefix(hashtype, args.hash)
     request_data = {
         'request': {
             'ApplicationId': args.applicationId.encode('UTF-8'),
             'DocName': args.docName,
-            'Hash': hashlib.sha256(args.hash).digest(),
-            # 'Hash': b'7Y\x871\xf3N\x8f\x89\xa0Z\xfd\xc0X\xe0\x1a3V\xa4\xea\xce\xbe;lv\xb6\xfbE\xd1Fw\xbd\x03',
-            # 'Hash': hashlib.sha256(b'Nobody inspects the spammish repetition').digest(),
+            'Hash': args.hash,
             'Pin': args.pin,
             'UserId': args.user
         }

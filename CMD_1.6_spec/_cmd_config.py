@@ -34,27 +34,6 @@ APPLICATION_ID = 'Change to your ApplicationId'
 #
 # A partir deste ponto, não alterar
 #
-def get_wsdl(env):
-    """Devolve URL do WSDL do SCMD.
-
-    Parameters
-    ----------
-    t : int
-        WSDL a devolver: 0 para preprod, 1 para prod.
-
-    Returns
-    -------
-    string
-        URL do WSDL do SCMD.
-
-    """
-    wsdl = {
-        0: 'https://preprod.cmd.autenticacao.gov.pt/Ama.Authentication.Frontend/CCMovelDigitalSignature.svc?wsdl',
-        1: 'TBD'
-    }
-    # Get the function from switcher dictionary
-    return wsdl.get(env, lambda: 'No valid WSDL')
-
 
 def get_appid():
     """Devolve APPLICATION_ID (fornecida pela AMA).
