@@ -1,6 +1,7 @@
 # Local
 cmd_config.py
 CMD_DSS_test/
+.gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
