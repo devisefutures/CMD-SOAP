@@ -2,6 +2,7 @@
 cmd_config.py
 CMD_DSS_test/
 .gitignore
+pylama.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

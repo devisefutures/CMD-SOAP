@@ -24,7 +24,7 @@ As várias opções da _command line interface_ (CLI) da aplicação de testes p
 ser visualizadas  através da execução de `python3 test_cmd_wsdl.py -h`.
 
 As opções de cada operação podem ser visualizadas  através da execução de
-`python3 test_cmd_wsdl.py <oper> -h`, em que <oper> é uma das seguintes
+`python3 test_cmd_wsdl.py <oper> -h`, em que `<oper>` é uma das seguintes
 operações:
 
 + "GetCertificate" ou "gc"

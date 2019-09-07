@@ -66,7 +66,7 @@ import cmd_soap_msg
 import cmd_config   # Nota: necessário renomear o ficheiro _cmd_config.py para cmd_config.py
 
 TEXT = 'test Command Line Program (for Preprod/Prod Signature CMD (SOAP) version 1.6 technical specification)'
-VERSION = 'version: 1.0'
+__version__ = '1.0'
 
 APPLICATION_ID = cmd_config.get_appid()
 
@@ -91,7 +91,7 @@ def args_parse():
     """Define as várias opções do comando linha."""
     parser = argparse.ArgumentParser(description=TEXT)
     parser.add_argument('-V', '--version', help='show program version', action='version',
-                        version=VERSION)
+                        version='%(prog)s v' + sys.modules[__name__].__version__)
 
     subparsers = parser.add_subparsers(title='CCMovelDigitalSignature Service',
                                        help='Signature CMD (SCMD) operations')
@@ -165,7 +165,7 @@ def args_parse():
 # Testa todos os comandos
 def testall(client, args):
     """Prepara e executa todos os comandos SCMD em sequência."""
-    print(TEXT + "\n" + VERSION)
+    print(TEXT + "\n" + __version__)
     print('\n+++ Test All inicializado +++\n')
     print(' 0% ... Leitura de argumentos da linha de comando - file: ' + args.file + ' user: '
           + args.user + ' pin: ' + args.pin)
@@ -223,4 +223,11 @@ def testall(client, args):
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit:
+        pass
+    except: # catch *all* exceptions
+        e = sys.exc_info()
+        print( "Error: %s" % str(e) )
+        exit()
