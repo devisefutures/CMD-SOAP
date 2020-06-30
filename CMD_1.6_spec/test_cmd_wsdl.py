@@ -99,50 +99,58 @@ def args_parse():
     # GetCertificate command
     gc_parser = subparsers.add_parser('GetCertificate', help='Get user certificate', aliases=['gc'],
                                       description='Get user certificate')
-    gc_parser.add_argument('user', action='store', help='user phone number (+XXX NNNNNNNNN)')
+    gc_parser.add_argument('user', action='store',
+                           help='user phone number (+XXX NNNNNNNNN)')
     gc_parser.add_argument('-applicationId', action='store', help='CMD ApplicationId',
                            default=APPLICATION_ID)
     gc_parser.add_argument('-prod', action='store_true',
                            help='Use production SCMD service (preproduction SCMD service used by default)')
-    gc_parser.add_argument('-D', '--debug', help='show debug information', action='store_true')
+    gc_parser.add_argument(
+        '-D', '--debug', help='show debug information', action='store_true')
     gc_parser.set_defaults(func=cmd_soap_msg.getcertificate)
 
     # CCMovelSign command
     ms_parser = subparsers.add_parser('CCMovelSign', help='Start signature process',
                                       aliases=['ms'], description='Start signature process')
-    ms_parser.add_argument('user', action='store', help='user phone number (+XXX NNNNNNNNN)')
+    ms_parser.add_argument('user', action='store',
+                           help='user phone number (+XXX NNNNNNNNN)')
     ms_parser.add_argument('pin', action='store', help='CMD signature PIN')
     ms_parser.add_argument('-applicationId', action='store', help='CMD ApplicationId',
                            default=APPLICATION_ID)
     ms_parser.add_argument('-prod', action='store_true',
                            help='Use production SCMD service (preproduction SCMD service used by default)')
-    ms_parser.add_argument('-D', '--debug', help='show debug information', action='store_true')
+    ms_parser.add_argument(
+        '-D', '--debug', help='show debug information', action='store_true')
     ms_parser.set_defaults(func=cmd_soap_msg.ccmovelsign)
 
     # CCMovelMultipleSign command
     mms_parser = subparsers.add_parser('CCMovelMultipleSign',
                                        help='Start multiple signature process', aliases=['mms'],
                                        description='Start multiple signature process')
-    mms_parser.add_argument('user', action='store', help='user phone number (+XXX NNNNNNNNN)')
+    mms_parser.add_argument('user', action='store',
+                            help='user phone number (+XXX NNNNNNNNN)')
     mms_parser.add_argument('pin', action='store', help='CMD signature PIN')
     mms_parser.add_argument('-applicationId', action='store', help='CMD ApplicationId',
                             default=APPLICATION_ID)
     mms_parser.add_argument('-prod', action='store_true',
                             help='Use production SCMD service (preproduction SCMD service used by default)')
-    mms_parser.add_argument('-D', '--debug', help='show debug information', action='store_true')
+    mms_parser.add_argument(
+        '-D', '--debug', help='show debug information', action='store_true')
     mms_parser.set_defaults(func=cmd_soap_msg.ccmovelmultiplesign)
 
     # ValidateOtp command
     val_parser = subparsers.add_parser('ValidateOtp', help='Validate OTP', aliases=['otp'],
                                        description='Validate OTP')
-    val_parser.add_argument('OTP', action='store', help='OTP received in your device')
+    val_parser.add_argument('OTP', action='store',
+                            help='OTP received in your device')
     val_parser.add_argument('ProcessId', action='store',
                             help='ProcessID received in the answer of the CCMovelSign/CCMovelMultipleSign command')
     val_parser.add_argument('-applicationId', action='store', help='CMD ApplicationId',
                             default=APPLICATION_ID)
     val_parser.add_argument('-prod', action='store_true',
                             help='Use production SCMD service (preproduction SCMD service used by default)')
-    val_parser.add_argument('-D', '--debug', help='show debug information', action='store_true')
+    val_parser.add_argument(
+        '-D', '--debug', help='show debug information', action='store_true')
     val_parser.set_defaults(func=cmd_soap_msg.validate_otp)
 
     # testall command
@@ -150,13 +158,15 @@ def args_parse():
                                         aliases=['test'],
                                         description='Automatically test all commands')
     test_parser.add_argument('file', action='store', help='file')
-    test_parser.add_argument('user', action='store', help='user phone number (+XXX NNNNNNNNN)')
+    test_parser.add_argument('user', action='store',
+                             help='user phone number (+XXX NNNNNNNNN)')
     test_parser.add_argument('pin', action='store', help='CMD signature PIN')
     test_parser.add_argument('-applicationId', action='store', help='CMD ApplicationId',
                              default=APPLICATION_ID)
     test_parser.add_argument('-prod', action='store_true',
                              help='Use production SCMD service (preproduction SCMD service used by default)')
-    test_parser.add_argument('-D', '--debug', help='show debug information', action='store_true')
+    test_parser.add_argument(
+        '-D', '--debug', help='show debug information', action='store_true')
     test_parser.set_defaults(func=testall)
 
     return parser.parse_args()
@@ -174,7 +184,8 @@ def testall(client, args):
     if cmd_certs is None:
         print('Impossível obter certificado')
         exit()
-    certs = pem.parse(cmd_certs.encode())  # certs[0] = user; certs[1] = root; certs[2] = CA
+    # certs[0] = user; certs[1] = root; certs[2] = CA
+    certs = pem.parse(cmd_certs.encode())
     certs_chain = {'user': crypto.load_certificate(crypto.FILETYPE_PEM, certs[0].as_bytes()),
                    'ca': crypto.load_certificate(crypto.FILETYPE_PEM, certs[2].as_bytes()),
                    'root': crypto.load_certificate(crypto.FILETYPE_PEM, certs[1].as_bytes())
@@ -191,21 +202,24 @@ def testall(client, args):
         exit()
     print('40% ... Geração de hash do ficheiro ' + args.file)
     args.hash = hashlib.sha256(file_content).digest()
-    print('50% ... Hash gerada (em base64): ' + base64.b64encode(args.hash).decode())
+    print('50% ... Hash gerada (em base64): ' +
+          base64.b64encode(args.hash).decode())
     print('60% ... A contactar servidor SOAP CMD para operação CCMovelSign')
     args.docName = args.file
     res = cmd_soap_msg.ccmovelsign(client, args)
     if res['Code'] != '200':
         print('Erro ' + res['Code'] + '. Valide o PIN introduzido.')
         exit()
-    print('70% ... ProcessID devolvido pela operação CCMovelSign: ' + res['ProcessId'])
+    print('70% ... ProcessID devolvido pela operação CCMovelSign: ' +
+          res['ProcessId'])
     vars(args)['ProcessId'] = res['ProcessId']
     print('80% ... A iniciar operação ValidateOtp')
     vars(args)['OTP'] = input('Introduza o OTP recebido no seu dispositivo: ')
     print('90% ... A contactar servidor SOAP CMD para operação ValidateOtp')
     res = cmd_soap_msg.validate_otp(client, args)
     if res['Status']['Code'] != '200':
-        print('Erro ' + res['Status']['Code'] + '. ' + res['Status']['Message'])
+        print('Erro ' + res['Status']['Code'] +
+              '. ' + res['Status']['Message'])
         exit()
     print('100% ... Assinatura (em base 64) devolvida pela operação ValidateOtp: ' +
           base64.b64encode(res['Signature']).decode())
@@ -227,7 +241,7 @@ if __name__ == "__main__":
         main()
     except SystemExit:
         pass
-    except: # catch *all* exceptions
+    except:  # catch *all* exceptions
         e = sys.exc_info()
-        print( "Error: %s" % str(e) )
+        print("Error: %s" % str(e))
         exit()

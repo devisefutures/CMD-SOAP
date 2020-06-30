@@ -49,7 +49,7 @@ opcional `-prod` na linha de comando.
 Para efetuar o teste à sequência de comandos GetCertificate, CCMovelSign e
 ValidateOtp, deve utilizar a seguinte linha de comando:
 
-        python3 test_cmd_wsdl.py test ../LICENSE '+351 000000000' 12345678
+        python3 test_cmd_wsdl.py test -prod ../LICENSE '+351 000000000' 12345678
 
 sendo a resposta esperada a seguinte:
 
@@ -61,20 +61,17 @@ sendo a resposta esperada a seguinte:
 
          0% ... Leitura de argumentos da linha de comando - file: ../LICENSE user: +351 000000000 pin: 12345678
         10% ... A contactar servidor SOAP CMD para operação GetCertificate
-        20% ... Certificado emitido para "JOSÉ EDUARDO PINA DE MIRANDA" pela Entidade de Certificação "(TESTE) EC de Chave Móvel Digital de Assinatura Digital Qualificada do Cartão de Cidadão 0007" na hierarquia do "(Teste) Cartão de Cidadão 005"
+
+        20% ... Certificado emitido para "JOSÉ EDUARDO PINA DE MIRANDA" pela Entidade de Certificação "EC de Chave Móvel Digital de Assinatura Digital Qualificada do Cartão de Cidadão 00003" na hierarquia do "Cartão de Cidadão 006"
         30% ... Leitura do ficheiro ../LICENSE
         40% ... Geração de hash do ficheiro ../LICENSE
         50% ... Hash gerada (em base64): OXLcl0T2SZ8Pmy2/dmlvKuetivmyPd5m1q+Gyd+zaYY=
         60% ... A contactar servidor SOAP CMD para operação CCMovelSign
-        70% ... ProcessID devolvido pela operação CCMovelSign: 8c3123b0-fc15-41e1-872c-c508249c0210
+        70% ... ProcessID devolvido pela operação CCMovelSign: 64947c5a-8f59-4c27-a665-a10697fc0308
         80% ... A iniciar operação ValidateOtp
-        Introduza o OTP recebido no seu dispositivo: 305816
-
+        Introduza o OTP recebido no seu dispositivo: 255305
         90% ... A contactar servidor SOAP CMD para operação ValidateOtp
-        100% ... Assinatura (em base 64) devolvida pela operação ValidateOtp: p3KlsLSg+csXAtc361WMu5SJJvX2v55fd1clnq3qx4ZtP7Ns5qjS1js6wKj9QfG5WJOc57KRu8y1OJDPF5yWmAodIt7sffT9IapkblLu5LweJi5h823t3SHA1gvNBXXD/+H/0SBx2uVph/hg0U/U9wNIB1SJJTyg720i7nw/lI7jhRovLFum6MP+Iq4gG/VnLw0L
-        gFtstx2W94jCKo0oI8EIsEzoxygQw6D5b2f7vVofaZxbE9peE0djwx8tx6UxGPIOLZWDv8QrnmU9xnmwvBN7iFNcYI+zL4BgiU/HSXiVvIBYUUvfff9HPmA6S/tcZhu3Fc3J2zYdcrEU12MrHvKDfEHsxy9HA9GYTFzjGCxnbfndDS5GO5PXmCFwgtEr9/IXWKlgNYAxze88KX20vHhHJXNqRyg47EB7L+Ll5QLqrZLqDTLNRTK5WhXhitL/iobGVg0PyBVYoO
-        6llSh72SQxwiOIGOFoSwSQNsdztkxDQyi3K4yVjToSfjjINp7A
-
+        100% ... Assinatura (em base 64) devolvida pela operação ValidateOtp: IOrEF2zu+MSls8E6FHI5oT84nyEok5fCmF6RHGeEK83rsViIzpih4qOyRue8iEndEKI0vpXtg0nMKcVWhkI9gwzHia8GJ9XH4+iFRj2jvSX/MNiBYuPldeouHK05/Tuw6760X3hNpJvVu+JVtO86maVExv64PJNh3Huf4zvW5HM3TUu0xQ1nup4rdn49b0DYPqymrFp3Q+Zj5h6xO2/354HqsstPfymz28GmOqqFecX/woAlizvGHVnFnazN+qeV/Z01gDv2kqkGdqtcYHStNN1Ivb0gjkmihTyp4eYL+PykzLXd2qOc+x2ibQyf/BUh1i09ayHCL5JIDzoTVtpZtNBVClbZLafTRUKfF0f8+SD7y1/j3RKPuAr/hIKlGuS+1B6h6fVk6Z3arRUFlL+ZCXo3Usiy2MkvUb0toxsVRFaPCZRNjqpuBDhMkphIEXD4wAaP0Q1wZ1n1V1AV06L50res4Io94iU64N6xu915xVAAFX9yQBtBYjFaG6WS9IA0
         110% ... A validar assinatura ...
         Assinatura verificada com sucesso, baseada na assinatura recebida, na hash gerada e na chave pública do certificado de JOSÉ EDUARDO PINA DE MIRANDA
 

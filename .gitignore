@@ -1,6 +1,5 @@
 # Local
 cmd_config.py
-CMD_DSS_test/
 .gitignore
 pylama.ini
 
