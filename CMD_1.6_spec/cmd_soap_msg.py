@@ -48,6 +48,7 @@ Funções que preparam e executam os comandos SOAP do SCMD, nomeadamente:
 import hashlib            # hash SHA256
 import logging.config     # debug
 from zeep import Client   # zeep para SOAP
+from zeep.transports import Transport
 
 
 # Função para ativar o debug, permitindo mostrar mensagens enviadas e recebidas do servidor SOAP
@@ -100,13 +101,15 @@ def get_wsdl(env):
 
 
 # Função que devolve o cliente de ligação (preprod ou prod) ao servidor SOAP da CMD
-def getclient(env=0):
+def getclient(env=0, timeout=10):
     """Devolve o cliente de ligação ao servidor SOAP da CMD.
 
     Parameters
     ----------
-    int
+    env: int
         WSDL a devolver: 0 para preprod, 1 para prod.
+    timeout: int
+        Valor máximo que espera para estabelever ligação com o servidor SOAP da CMD
 
     Returns
     -------
@@ -115,7 +118,9 @@ def getclient(env=0):
         servidor de preprod.
 
     """
-    return Client(get_wsdl(env))
+    transport = Transport(timeout=timeout)
+    return Client(get_wsdl(env), transport=transport)
+
 
 # Devolve a hash acrescentada do prefixo do tipo de hash utilizada
 def hashPrefix(hashtype, hash):
